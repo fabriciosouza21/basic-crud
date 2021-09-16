@@ -3,6 +3,7 @@ package com.fsm.crud.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -35,20 +36,35 @@ public class ClientServices {
 	public ClientDTO insert(ClientDTO newClient) {
 		Client client = new Client();
 		
-		client = copyFromDtoToEntity(newClient, client);
+		copyFromDtoToEntity(newClient, client);
 		
 		return new ClientDTO(client);
 	}
-	
+	@Transactional
+	public ClientDTO update(Long id, ClientDTO updateClient) {
+		Client client = repository.getOne(id);
+		copyFromDtoToEntity(updateClient, client);
+		repository.save(client);
+		return new ClientDTO(client);
+	}
 
-	private Client copyFromDtoToEntity(ClientDTO newClient, Client client) {
+
+	private void copyFromDtoToEntity(ClientDTO newClient, Client client) {
 		client.setName(newClient.getName());
 		client.setCpf(newClient.getCpf());
 		client.setChildren(newClient.getChildren());
 		client.setBithDate(newClient.getBirthDate());
 		client.setIncome(newClient.getIncome());
 		client = repository.save(client);
-		return client;
 	}
+
+	public void delete(Long id) {
+		try {
+			repository.deleteById(id);
+		} catch (EmptyResultDataAccessException e) {
+			throw new NotFoundException("not found client id: " + id);
+		} 
+	}
+
 
 }
