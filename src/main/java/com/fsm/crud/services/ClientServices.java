@@ -31,5 +31,24 @@ public class ClientServices {
 		Client client = clientOptional.orElseThrow(() -> new NotFoundException("Client not found"));
 		return new ClientDTO(client);
 	}
+	@Transactional
+	public ClientDTO insert(ClientDTO newClient) {
+		Client client = new Client();
+		
+		client = copyFromDtoToEntity(newClient, client);
+		
+		return new ClientDTO(client);
+	}
+	
+
+	private Client copyFromDtoToEntity(ClientDTO newClient, Client client) {
+		client.setName(newClient.getName());
+		client.setCpf(newClient.getCpf());
+		client.setChildren(newClient.getChildren());
+		client.setBithDate(newClient.getBirthDate());
+		client.setIncome(newClient.getIncome());
+		client = repository.save(client);
+		return client;
+	}
 
 }
