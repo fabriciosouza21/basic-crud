@@ -1,5 +1,7 @@
 package com.fsm.crud.services;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fsm.crud.dto.ClientDTO;
 import com.fsm.crud.entities.Client;
 import com.fsm.crud.repositoies.ClientRepository;
+import com.fsm.crud.services.exception.NotFoundException;
 
 @Service
 public class ClientServices {
@@ -20,6 +23,13 @@ public class ClientServices {
 		Page<Client> clients = repository.findAll(pageRequest);
 		return clients.map(x -> new ClientDTO(x));
 		 
+	}
+	
+	@Transactional(readOnly = true)
+	public ClientDTO findById(Long id) {
+		Optional<Client> clientOptional = repository.findById(id);
+		Client client = clientOptional.orElseThrow(() -> new NotFoundException("Client not found"));
+		return new ClientDTO(client);
 	}
 
 }

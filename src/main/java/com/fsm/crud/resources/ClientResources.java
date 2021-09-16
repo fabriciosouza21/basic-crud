@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,13 @@ public class ClientResources {
 			Page<ClientDTO> clients = services.findAll(pageRequest);
 			return ResponseEntity.ok().body(clients);
 
-		} 
+		}
+		@GetMapping(value = "/{id}")
+		public ResponseEntity<ClientDTO> findById(@PathVariable Long id){
+			ClientDTO client = services.findById(id);			
+			return ResponseEntity.ok().body(client);
+			
+		}
+		
 
 }
